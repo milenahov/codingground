@@ -1,0 +1,9 @@
+# Raw and generated media never belongs in the repo
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.m4a
+checkpoints/
+output/
+__pycache__/
