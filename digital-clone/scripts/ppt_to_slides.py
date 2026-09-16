@@ -7,6 +7,7 @@ free/open-source and CPU-only.
 import argparse
 import glob
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -49,9 +50,12 @@ def main() -> None:
     if tmp_dir:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
-    # pdftoppm names files slide-1.png, slide-2.png, ... (or slide-01.png with
-    # padding depending on page count) — renumber to a stable slide_NNN.png.
-    produced = sorted(glob.glob(f"{prefix}-*.png"))
+    # pdftoppm zero-pads page numbers by page count, so sort on the parsed
+    # number — lexicographic order would put page 10 before page 2.
+    produced = sorted(
+        glob.glob(f"{prefix}-*.png"),
+        key=lambda p: int(re.search(r"-(\d+)\.png$", p).group(1)),
+    )
     for i, path in enumerate(produced, start=1):
         target = os.path.join(args.outdir, f"slide_{i:03d}.png")
         os.rename(path, target)
